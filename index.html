@@ -148,6 +148,70 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/23/Laravel-Middleware-%E5%9F%B7%E8%A1%8C%E9%A0%86%E5%BA%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="只是個記錄筆記的地方...">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Web.Note">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/23/Laravel-Middleware-%E5%9F%B7%E8%A1%8C%E9%A0%86%E5%BA%8F/" class="post-title-link" itemprop="url">Laravel Middleware 執行順序</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-02-23 22:46:06 / 修改時間：22:59:17" itemprop="dateCreated datePublished" datetime="2021-02-23T22:46:06+08:00">2021-02-23</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Middleware"><a href="#Middleware" class="headerlink" title="Middleware"></a>Middleware</h2><p>最近在進行的專案中在<code>Controller __construct()</code>裡面有做些共同的操作，在後續加上<code>Middleware</code>來處理最外層驗證的需求遇到的問題</p>
+<p>一般使用<code>Middleware</code>可以在Route裡面使用，只要先在Kernel中的<code>$routeMiddleware</code>設定好alias就可以使用</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Route::middleware(<span class="string">&#x27;test&#x27;</span>)-&gt;get(<span class="string">&#x27;/test&#x27;</span>,<span class="string">&#x27;TestController@index&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>或是在Controller的<code>__construct()</code>裡使用</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;middleware(<span class="string">&#x27;test&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但這次因為在<code>__construct()</code>裡面預先處理了一些邏輯才發現不管是在Route或是Controller使用的<code>Middleware</code>執行順序完全不是照著自己想得順序走</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
     <link itemprop="mainEntityOfPage" href="http://example.com/2021/02/01/%E7%80%8F%E8%A6%BD%E5%99%A8%E9%96%8B%E7%99%BC%E8%80%85%E5%B7%A5%E5%85%B7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -173,7 +237,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-02-01 22:00:06 / 修改時間：22:29:59" itemprop="dateCreated datePublished" datetime="2021-02-01T22:00:06+08:00">2021-02-01</time>
+              <time title="創建時間：2021-02-01 22:00:06 / 修改時間：22:38:34" itemprop="dateCreated datePublished" datetime="2021-02-01T22:00:06+08:00">2021-02-01</time>
             </span>
 
           
@@ -569,12 +633,12 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-count">6</span>
           <span class="site-state-item-name">文章</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
