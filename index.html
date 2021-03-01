@@ -171,10 +171,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">發表於</span>
-              
 
-              <time title="創建時間：2021-02-23 22:46:06 / 修改時間：22:59:17" itemprop="dateCreated datePublished" datetime="2021-02-23T22:46:06+08:00">2021-02-23</time>
+              <time title="創建時間：2021-02-23 22:46:06" itemprop="dateCreated datePublished" datetime="2021-02-23T22:46:06+08:00">2021-02-23</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新於</span>
+                <time title="修改時間：2021-03-01 14:11:42" itemprop="dateModified" datetime="2021-03-01T14:11:42+08:00">2021-03-01</time>
+              </span>
 
           
 
@@ -187,13 +193,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="Middleware"><a href="#Middleware" class="headerlink" title="Middleware"></a>Middleware</h2><p>最近在進行的專案中在<code>Controller __construct()</code>裡面有做些共同的操作，在後續加上<code>Middleware</code>來處理最外層驗證的需求遇到的問題</p>
-<p>一般使用<code>Middleware</code>可以在Route裡面使用，只要先在Kernel中的<code>$routeMiddleware</code>設定好alias就可以使用</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Route::middleware(<span class="string">&#x27;test&#x27;</span>)-&gt;get(<span class="string">&#x27;/test&#x27;</span>,<span class="string">&#x27;TestController@index&#x27;</span>);</span><br></pre></td></tr></table></figure>
-<p>或是在Controller的<code>__construct()</code>裡使用</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">__construct</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">$this</span>-&gt;middleware(<span class="string">&#x27;test&#x27;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>但這次因為在<code>__construct()</code>裡面預先處理了一些邏輯才發現不管是在Route或是Controller使用的<code>Middleware</code>執行順序完全不是照著自己想得順序走</p>
-
+          <h2 id="Middleware-執行順序"><a href="#Middleware-執行順序" class="headerlink" title="Middleware 執行順序"></a>Middleware 執行順序</h2><p>最近在進行的專案中在<code>Controller __construct()</code>裡面有做些共同初始化的操作，在後續加上<code>Middleware</code>來處理最外層驗證的需求時遇到的問題。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/02/23/Laravel-Middleware-%E5%9F%B7%E8%A1%8C%E9%A0%86%E5%BA%8F/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -638,7 +646,7 @@
         </a>
       </div>
       <div class="site-state-item site-state-tags">
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">標籤</span>
       </div>
   </nav>
