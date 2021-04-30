@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Laravel 使用Javascript設置的cookie因為平常都是在後端開發，所以使用的cookie或是session都是在後端設定的( 其實自己很少使用cookie… )，最近碰到使用JavaScript設定cookie實作功能比較方便的情況，沒想到直接卡住…">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Laravel使用JavaScript設置cookie">
+<meta property="og:url" content="http://example.com/2021/04/30/Laravel%E4%BD%BF%E7%94%A8JavaScript%E8%A8%AD%E7%BD%AEcookie/index.html">
+<meta property="og:site_name" content="Web.Note">
+<meta property="og:description" content="Laravel 使用Javascript設置的cookie因為平常都是在後端開發，所以使用的cookie或是session都是在後端設定的( 其實自己很少使用cookie… )，最近碰到使用JavaScript設定cookie實作功能比較方便的情況，沒想到直接卡住…">
+<meta property="og:locale" content="zh_TW">
+<meta property="article:published_time" content="2021-04-30T05:11:36.000Z">
+<meta property="article:modified_time" content="2021-04-30T06:37:51.500Z">
+<meta property="article:author" content="Johnson">
+<meta property="article:tag" content="Laravel">
+<meta property="article:tag" content="Cookie">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2021/04/30/Laravel%E4%BD%BF%E7%94%A8JavaScript%E8%A8%AD%E7%BD%AEcookie/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-TW'
+  };
+</script>
+
+  <title>Laravel使用JavaScript設置cookie | Web.Note</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切換導航欄">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Web.Note</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首頁</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>歸檔</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-TW">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2021/04/30/Laravel%E4%BD%BF%E7%94%A8JavaScript%E8%A8%AD%E7%BD%AEcookie/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/uploads/avatar.png">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="只是個記錄筆記的地方...">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Web.Note">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Laravel使用JavaScript設置cookie
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">發表於</span>
+              
+
+              <time title="創建時間：2021-04-30 13:11:36 / 修改時間：14:37:51" itemprop="dateCreated datePublished" datetime="2021-04-30T13:11:36+08:00">2021-04-30</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Laravel-使用Javascript設置的cookie"><a href="#Laravel-使用Javascript設置的cookie" class="headerlink" title="Laravel 使用Javascript設置的cookie"></a>Laravel 使用Javascript設置的cookie</h1><p>因為平常都是在後端開發，所以使用的cookie或是session都是在後端設定的( <del>其實自己很少使用cookie…</del> )，最近碰到使用JavaScript設定cookie實作功能比較方便的情況，沒想到直接卡住…</p>
+<a id="more"></a>
+
+<p>目前想到會直接使用前端設置cookie，應該是像網頁提醒視窗或是切換暗黑模式這種操作行為。這次實作提醒視窗中在JavaScript設定cookie上沒有遇到太大的問題，但因為少用還是爬文複習了一下</p>
+<p>cookie平常存放的方式為 <code>cookie-name=cookie-value; user-name=johnson;</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> COOKIE_DOMAIN = <span class="string">&#x27;example.com&#x27;</span>;</span><br><span class="line"><span class="keyword">let</span> cookieName = <span class="string">&#x27;user-cookie&#x27;</span>;</span><br><span class="line"><span class="keyword">let</span> value = <span class="string">&#x27;150&#x27;</span>;</span><br><span class="line"><span class="keyword">let</span> date = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line"><span class="keyword">let</span> day = <span class="number">7</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// domain : 預設值為當前網域，如要使用子網域需要設定成 example.com，這樣 blog.example.com也可以使用</span></span><br><span class="line"><span class="comment">// expires : 預設為關閉瀏覽器就失效，UTC時間</span></span><br><span class="line"><span class="comment">// max-age : 預設為關閉瀏覽器就失效，cookie設定後的存活秒數 (可以跟上面expires擇一使用)</span></span><br><span class="line"><span class="comment">// path : 預設是當前的path，可以設定成 / 這樣網域下都可以使用</span></span><br><span class="line"><span class="comment">// secure : 只需加上，https才能使用</span></span><br><span class="line"><span class="comment">// httpOnly : true 只有request會帶上，javascript無法存取</span></span><br><span class="line"><span class="comment">// sameSite : 防止csrf</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 設定7天過期</span></span><br><span class="line">date.setTime(date.getTime() + (day * <span class="number">24</span> * <span class="number">60</span> * <span class="number">60</span> * <span class="number">1000</span>));</span><br><span class="line"></span><br><span class="line"><span class="built_in">document</span>.cookie = cookieName + <span class="string">&#x27;=&#x27;</span> + value +</span><br><span class="line">                    <span class="string">&#x27;;expires=&#x27;</span> + date.toUTCString() +</span><br><span class="line">                    <span class="string">&#x27;;domain=&#x27;</span> + COOKIE_DOMAIN +</span><br><span class="line">                    <span class="string">&#x27;;path=/&#x27;</span> +</span><br><span class="line">                    <span class="string">&#x27;;samesite = true&#x27;</span>;</span><br><span class="line"><span class="built_in">console</span>.log(<span class="built_in">document</span>.cookie);</span><br></pre></td></tr></table></figure>
+<p>上面設置上完成後，直接使用JavaScript判斷cookie做頁面上的效果切換時候發現畫面會閃爍，使用體驗上很差還是需要配合Laravel後端做判斷，問題就是卡在這裡…</p>
+<p>平常習慣在Laravel操作cookie或是session都是直接從對應類的facade去處理，這次也想說理所當然就這樣做了，結果就是怎麼樣讀不到在前端設定的cookie值，重新翻過文檔和爬文才知道Laravel只能讀取自己設置的cookie，並且會使用<code>Bcrypt()</code>加密。</p>
+<p>如果需要使用前端不加密設置的cookie，需要像middleware或是csrf一樣設置<code>$excep</code>下面記錄處理方式</p>
+<p>在 <code>Middleware/EncryptCookies</code> 的 except 陣列設定cookie name</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">EncryptCookies</span> <span class="keyword">extends</span> <span class="title">Middleware</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * The names of the cookies that should not be encrypted.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@var</span> array</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="variable">$except</span> = [</span><br><span class="line">        <span class="string">&#x27;user-cookie&#x27;</span></span><br><span class="line">    ];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>或是在 <code>Providers/AppServiceProvider</code> 的boot加上</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Bootstrap any application services.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="function"><span class="keyword">function</span> <span class="title">boot</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// 禁止對 &#x27;allow-cookie&#x27; 加密</span></span><br><span class="line">    <span class="keyword">$this</span>-&gt;app-&gt;resolving(EncryptCookies::class, <span class="function"><span class="keyword">function</span> (<span class="params">EncryptCookies <span class="variable">$encryptCookies</span></span>) </span>&#123;</span><br><span class="line">        <span class="variable">$encryptCookies</span>-&gt;disableFor(<span class="string">&#x27;allow-cookie&#x27;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Laravel/" rel="tag"># Laravel</a>
+              <a href="/tags/Cookie/" rel="tag"># Cookie</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/23/Laravel-Middleware-%E5%9F%B7%E8%A1%8C%E9%A0%86%E5%BA%8F/" rel="prev" title="Laravel Middleware 執行順序">
+      <i class="fa fa-chevron-left"></i> Laravel Middleware 執行順序
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目錄
+        </li>
+        <li class="sidebar-nav-overview">
+          本站概要
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Laravel-%E4%BD%BF%E7%94%A8Javascript%E8%A8%AD%E7%BD%AE%E7%9A%84cookie"><span class="nav-number">1.</span> <span class="nav-text">Laravel 使用Javascript設置的cookie</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Johnson"
+      src="/uploads/avatar.png">
+  <p class="site-author-name" itemprop="name">Johnson</p>
+  <div class="site-description" itemprop="description">只是個記錄筆記的地方...</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-name">文章</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">標籤</span>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Johnson</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 強力驅動
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
