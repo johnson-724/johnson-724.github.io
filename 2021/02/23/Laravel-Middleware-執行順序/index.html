@@ -247,6 +247,13 @@
 
           </div>
           
+    
+  <div class="comments">
+    <div id="disqus_thread">
+      <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+    </div>
+  </div>
+  
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -400,6 +407,27 @@
   
 
   
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "http://example.com/2021/02/23/Laravel-Middleware-%E5%9F%B7%E8%A1%8C%E9%A0%86%E5%BA%8F/";
+    this.page.identifier = "2021/02/23/Laravel-Middleware-執行順序/";
+    this.page.title = "Laravel Middleware 執行順序";
+    };
+  NexT.utils.loadComments(document.querySelector('#disqus_thread'), () => {
+    if (window.DISQUS) {
+      DISQUS.reset({
+        reload: true,
+        config: disqus_config
+      });
+    } else {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://johnson724-blog.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', '' + +new Date());
+      (d.head || d.body).appendChild(s);
+    }
+  });
+</script>
 
 </body>
 </html>
