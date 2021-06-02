@@ -173,7 +173,7 @@
               <span class="post-meta-item-text">發表於</span>
               
 
-              <time title="創建時間：2021-06-02 22:06:19 / 修改時間：23:07:46" itemprop="dateCreated datePublished" datetime="2021-06-02T22:06:19+08:00">2021-06-02</time>
+              <time title="創建時間：2021-06-02 22:06:19 / 修改時間：23:09:25" itemprop="dateCreated datePublished" datetime="2021-06-02T22:06:19+08:00">2021-06-02</time>
             </span>
 
           
@@ -188,61 +188,14 @@
 
       
           <p>最近碰到後台系統中使用者要套用權限控管，之前在實作這部分的功能是以RBAC(以角色為基礎的存取控制)方式來做的，但之前都是自己刻相關的程式碼，這次想使用現有套件來配合實作，順便複習一下RBAC的概念。</p>
-<h2 id="RBAC-以角色為基礎的存取控制"><a href="#RBAC-以角色為基礎的存取控制" class="headerlink" title="RBAC (以角色為基礎的存取控制)"></a>RBAC (以角色為基礎的存取控制)</h2><p><br>這種方式簡單來說就是將每位登入的使用者賦予一或多個角色，而細部的權限則掛在角色身上，這樣的方式可以更彈性的管理系統。</p>
-<p>例如： </p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">A 使用者被賦予 RD 的角色， RD 的角色掛著 [訪問Log, ...] 的權限</span><br><span class="line">B 使用者被賦予 業務 的角色， 業務 的角色掛著 [建立訂單, ...] 的權限</span><br><span class="line"></span><br><span class="line">後續要如果有新業務人員只要在帳號上賦予業務的角色就可以了...</span><br></pre></td></tr></table></figure>
-<h2 id="實作基本RBAC"><a href="#實作基本RBAC" class="headerlink" title="實作基本RBAC"></a>實作基本RBAC</h2><p>如果只是單純的權限控管其實只需要簡單的三張主表就可已完成 <code>user</code>  <code>role</code> <code>permission</code> 。</p>
-<p>簡單的需求可以只做下面的限制</p>
-<ul>
-<li>每位使用者可以有多種角色 user has many role</li>
-<li>每個角色可以有多種權限(菜單) role has many permission</li>
-</ul>
-<p>如上條件可以定義出 <code>user</code> 對 <code>role</code> 的多對多關聯、 <code>role</code> 對 <code>permission</code> 的多對多關聯。</p>
-<h3 id="資料表概念"><a href="#資料表概念" class="headerlink" title="資料表概念"></a>資料表概念</h3><h4 id="user-使用者"><a href="#user-使用者" class="headerlink" title="user (使用者)"></a>user (使用者)</h4><p>user 以多對多的方式關聯到到 role</p>
-<h4 id="role-角色"><a href="#role-角色" class="headerlink" title="role (角色)"></a>role (角色)</h4><p>role 以多對多的方式關聯到到 permission</p>
-<h4 id="permission-權限"><a href="#permission-權限" class="headerlink" title="permission (權限)"></a>permission (權限)</h4><p><code>permission</code> 權限的部分我自己的設想是當作使用者是否可以訪問該權限頁面或是更細部的操作，因為目前接實作上都算是比寬鬆的權限設置，也就是說只有允許頁面的顯示或是阻擋 (只有需要顯示的入口才設置權限)，所以我都直接當作路由或是顯示用的菜單來看，所以在欄位上除了 <code>權限名稱</code> 我自己還會加上 <code>路由名稱</code> 之類的可以跟程式碼的路由做關聯。</p>
-<h3 id="程式實作"><a href="#程式實作" class="headerlink" title="程式實作"></a>程式實作</h3><p>在實作的部分主要就是路由和驗證，因為是以 Laravel 來實作，所以在驗證的部分使用 middleware 來處理</p>
-<h4 id="路由"><a href="#路由" class="headerlink" title="路由"></a>路由</h4><p>用新增文章來舉例，只限制文章主頁來說 <code>post.index</code>，在 permission 中有一筆叫做  <code>post.index</code> 的資料</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Route::middleware([<span class="string">&#x27;permission:post.index&#x27;</span>])-&gt;name(<span class="string">&#x27;post.&#x27;</span>)-&gt;group(<span class="string">&#x27;post&#x27;</span>, <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">	Route::get(<span class="string">&#x27;/&#x27;</span>, <span class="string">&#x27;PostController@index&#x27;</span>)-&gt;name(<span class="string">&#x27;index&#x27;</span>);</span><br><span class="line">	Route::get(<span class="string">&#x27;/create&#x27;</span>, <span class="string">&#x27;PostController@create&#x27;</span>)-&gt;name(<span class="string">&#x27;create&#x27;</span>);</span><br><span class="line">	Route::get(<span class="string">&#x27;/store&#x27;</span>, <span class="string">&#x27;PostController@store&#x27;</span>)-&gt;name(<span class="string">&#x27;store&#x27;</span>);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
-<h4 id="middleware"><a href="#middleware" class="headerlink" title="middleware"></a>middleware</h4><p>驗證主要就是依照用者擁有的所有角色在往下找到權限</p>
-<p>例如這個請求是需要 <code>post.index</code> 的權限…</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">auth()-&gt;user()-&gt;roles()-&gt;permissions()-&gt;get()-&gt;contain(<span class="string">&#x27;name&#x27;</span>, <span class="string">&#x27;post.index&#x27;</span>)</span><br></pre></td></tr></table></figure>
-<hr>
-<h2 id="使用現有套件來實作-laravel-permission"><a href="#使用現有套件來實作-laravel-permission" class="headerlink" title="使用現有套件來實作 (laravel-permission)"></a>使用現有套件來實作 (laravel-permission)</h2><p>直接使用現有套件來實作會比自己刻功能來的快和完善，因為之前已經手刻過基本的功能所以這次直接使用套件來弄～</p>
-<ul>
-<li>首先安裝套件<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">composer require spatie&#x2F;laravel-permission</span><br></pre></td></tr></table></figure></li>
-</ul>
-<ul>
-<li>然後照官方步驟發佈檔案和migrate</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan vendor:publish --provider=<span class="string">&quot;Spatie\Permission\PermissionServiceProvider&quot;</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">php artisan migrate</span><br></pre></td></tr></table></figure>
-<ul>
-<li>user model 使用 trait<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Spatie</span>\<span class="title">Permission</span>\<span class="title">Traits</span>\<span class="title">HasRoles</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">use</span> <span class="title">HasRoles</span>;</span><br></pre></td></tr></table></figure>
-laravel-permission 提供的功能很強大，user 除了關聯 role 還可以直接關聯到 permission，而且還提供 guard 的區分。另外建立的 permission 還會自動註冊 laravel gate，可以直接使用 <code>can</code> 這種方法～</li>
-</ul>
-<p>不過我沒使用到那麼複雜的功能，只使用基本的部份在下面記錄一下</p>
-<ul>
-<li>建立 role or permission</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Spatie</span>\<span class="title">Permission</span>\<span class="title">Models</span>\<span class="title">Role</span>;</span><br><span class="line"><span class="keyword">use</span> <span class="title">Spatie</span>\<span class="title">Permission</span>\<span class="title">Models</span>\<span class="title">Permission</span>;</span><br><span class="line"></span><br><span class="line"><span class="variable">$role</span> = Role::create([<span class="string">&#x27;name&#x27;</span> =&gt; <span class="string">&#x27;normal_user&#x27;</span>]);</span><br><span class="line"><span class="variable">$permission</span> = Permission::create([<span class="string">&#x27;name&#x27;</span> =&gt; <span class="string">&#x27;create_post&#x27;</span>]);</span><br></pre></td></tr></table></figure>
-<ul>
-<li>user 同步 role or permission</li>
-</ul>
-<p>同步是使用名稱字串的陣列</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$user</span>-&gt;syncRoles([<span class="string">&#x27;normal_user&#x27;</span>, <span class="string">&#x27;admin&#x27;</span>]);</span><br><span class="line"><span class="variable">$role</span>-&gt;syncPermissions([<span class="string">&#x27;create_post&#x27;</span>, <span class="string">&#x27;delete_post&#x27;</span>]);</span><br></pre></td></tr></table></figure>
-<ul>
-<li>檢查 user 權限</li>
-</ul>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$user</span>-&gt;hasPermissionTo(<span class="string">&#x27;normal_user&#x27;</span>);</span><br></pre></td></tr></table></figure>
-<ul>
-<li>擴充 permission model<br>只要在自己的permission class 繼承下面的<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">use</span> <span class="title">Spatie</span>\<span class="title">Permission</span>\<span class="title">Models</span>\<span class="title">Permission</span> <span class="title">as</span> <span class="title">SpatiePermission</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Permission</span> <span class="keyword">extends</span> <span class="title">SpatiePermission</span></span></span><br><span class="line"><span class="class"></span>&#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li>middleware 驗證</li>
-</ul>
-<p>直接使用套件提供的 middleware 驗證佷方便~<br>註冊 middleware</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> <span class="variable">$routeMiddleware</span> = [</span><br><span class="line">    <span class="string">&#x27;role&#x27;</span> =&gt; \Spatie\Permission\Middlewares\RoleMiddleware::class,</span><br><span class="line">    <span class="string">&#x27;permission&#x27;</span> =&gt; \Spatie\Permission\Middlewares\PermissionMiddleware::class,</span><br><span class="line">];</span><br></pre></td></tr></table></figure>
-<p>路由加入 middleware，如果有多個要驗證向使用laravel validate的方式 <code>|</code> 來區隔</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Route::middleware([<span class="string">&#x27;permission:normal_user|admin&#x27;</span>])-&gt;get(<span class="string">&#x27;/&#x27;</span>, <span class="string">&#x27;PostController@index&#x27;</span>)-&gt;name(<span class="string">&#x27;index&#x27;</span>);</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/06/02/RBAC-%E8%A7%92%E8%89%B2%E6%AC%8A%E9%99%90%E6%8E%A7%E7%AE%A1/#more" rel="contents">
+                閱讀全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
